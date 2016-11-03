@@ -65,7 +65,7 @@ parameters:
   UpgradeLevelNovaCompute:
     type: string
     description: Nova Compute upgrade level
-    default: ''
+    default: auto
 conditions:
 
   compute_upgrade_level_empty: {equals : [{get_param: UpgradeLevelNovaCompute}, '']}
@@ -118,7 +118,7 @@ outputs:
           nova::glance_api_servers: {get_param: [EndpointMap, GlanceInternal, uri]}
           nova::use_ipv6: {get_param: NovaIPv6}
           nova::network::neutron::neutron_ovs_bridge: {get_param: NovaOVSBridge}
-        - 
+        -
           if:
           - compute_upgrade_level_empty
           - {}

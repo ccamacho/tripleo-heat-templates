@@ -147,3 +147,11 @@ outputs:
           cinder::db::mysql::allowed_hosts:
             - '%'
             - "%{hiera('mysql_bind_host')}"
+      upgrade_tasks:
+        - name: Stop cinder_api service (running under httpd)
+          tags: step2
+          service: name=httpd state=stopped
+        - name: Start cinder_api service (running under httpd)
+          tags: step6
+          service: name=httpd state=started
+

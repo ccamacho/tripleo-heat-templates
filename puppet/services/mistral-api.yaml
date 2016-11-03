@@ -50,3 +50,11 @@ outputs:
         get_attr: [MistralBase, role_data, service_config_settings]
       step_config: |
         include ::tripleo::profile::base::mistral::api
+      upgrade_tasks:
+        - name: Stop mistral_api service
+          tags: step2
+          service: name=openstack-mistral-api state=stopped
+        - name: Start mistral_api service
+          tags: step6
+          service: name=openstack-mistral-api state=started
+

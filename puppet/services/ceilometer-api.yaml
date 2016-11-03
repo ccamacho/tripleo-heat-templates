@@ -90,3 +90,10 @@ outputs:
         get_attr: [CeilometerServiceBase, role_data, service_config_settings]
       step_config: |
         include ::tripleo::profile::base::ceilometer::api
+      upgrade_tasks:
+        - name: Stop ceilometer_api service (running under httpd)
+          tags: step2
+          service: name=httpd state=stopped
+        - name: Start ceilometer_api service (running under httpd)
+          tags: step6
+          service: name=httpd state=started

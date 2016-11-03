@@ -50,3 +50,11 @@ outputs:
             proto: vrrp
       step_config: |
         include ::tripleo::profile::base::keepalived
+      upgrade_tasks:
+        - name: Stop keepalived service
+          tags: step1
+          service: name=keepalived state=stopped
+        - name: Start keepalived service
+          tags: step4 # Needed at step 4 for mysql
+          service: name=keepalived state=started
+

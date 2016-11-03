@@ -90,3 +90,22 @@ outputs:
             swift::storage::all::storage_local_net_ip: {get_param: [ServiceNetMap, SwiftStorageNetwork]}
       step_config: |
         include ::tripleo::profile::base::swift::storage
+      upgrade_tasks:
+        - name: Stop swift object services
+          tags: step2
+          service: name=openstack-swift-object* state=stopped
+        - name: Stop swift container services
+          tags: step2
+          service: name=openstack-swift-container* state=stopped
+        - name: Stop swift account services
+          tags: step2
+          service: name=openstack-swift-account* state=stopped
+        - name: Start swift object services
+          tags: step6
+          service: name=openstack-swift-object* state=started
+        - name: Start swift container services
+          tags: step6
+          service: name=openstack-swift-container* state=started
+        - name: Start swift account services
+          tags: step6
+          service: name=openstack-swift-account* state=started

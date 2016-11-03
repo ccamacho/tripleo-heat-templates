@@ -36,3 +36,11 @@ outputs:
         get_attr: [MistralBase, role_data, config_settings]
       step_config: |
         include ::tripleo::profile::base::mistral::executor
+      upgrade_tasks:
+        - name: Stop mistral_executor service
+          tags: step2
+          service: name=openstack-mistral-executor state=stopped
+        - name: Start mistral_executor service
+          tags: step6
+          service: name=openstack-mistral-executor state=started
+

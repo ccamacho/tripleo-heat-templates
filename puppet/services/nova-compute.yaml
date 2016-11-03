@@ -75,6 +75,10 @@ parameters:
     default:
       tag: openstack.nova.compute
       path: /var/log/nova/nova-compute.log
+  UpgradeLevelNovaCompute:
+    type: string
+    description: Nova Compute upgrade level
+    default: auto
 
 resources:
   NovaBase:
@@ -145,3 +149,13 @@ outputs:
         # We'll probably treat it like we do with Neutron plugins.
         # Until then, just include it in the default nova-compute role.
         include tripleo::profile::base::nova::compute::libvirt
+      upgrade_tasks:
+        # If not already set by puppet (e.g a pre-ocata version), set the
+        # upgrade_level for compute to "auto"
+        - name: Set compute upgrade level to auto
+          tags: step3
+          command:
+            str_replace:
+              template: "crudini  --set /etc/nova/nova.conf upgrade_levels compute LEVEL"
+              params:
+                LEVEL: {get_param: UpgradeLevelNovaCompute}
