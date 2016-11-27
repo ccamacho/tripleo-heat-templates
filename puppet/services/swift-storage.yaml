@@ -91,21 +91,76 @@ outputs:
       step_config: |
         include ::tripleo::profile::base::swift::storage
       upgrade_tasks:
-        - name: Stop swift object services
+        - name: Stop swift object replicator service
           tags: step2
-          service: name=openstack-swift-object* state=stopped
-        - name: Stop swift container services
+          service: name=openstack-swift-object-replicator state=stopped
+        - name: Stop swift object auditor service
           tags: step2
-          service: name=openstack-swift-container* state=stopped
-        - name: Stop swift account services
+          service: name=openstack-swift-object-auditor state=stopped
+        - name: Stop swift object updater service
           tags: step2
-          service: name=openstack-swift-account* state=stopped
-        - name: Start swift object services
+          service: name=openstack-swift-object-updater state=stopped
+
+        - name: Stop swift container replicator service
+          tags: step2
+          service: name=openstack-swift-container-replicator state=stopped
+        - name: Stop swift container auditor service
+          tags: step2
+          service: name=openstack-swift-container-auditor state=stopped
+        - name: Stop swift container updater service
+          tags: step2
+          service: name=openstack-swift-container-updater state=stopped
+        - name: Stop swift container service
+          tags: step2
+          service: name=openstack-swift-container state=stopped
+
+        - name: Stop swift account replicator service
+          tags: step2
+          service: name=openstack-swift-account-replicator state=stopped
+        - name: Stop swift account auditor service
+          tags: step2
+          service: name=openstack-swift-account-auditor state=stopped
+        - name: Stop swift account reaper service
+          tags: step2
+          service: name=openstack-swift-account-reaper state=stopped
+        - name: Stop swift account service
+          tags: step2
+          service: name=openstack-swift-account state=stopped
+
+
+        - name: Start swift object replicator service
           tags: step6
-          service: name=openstack-swift-object* state=started
-        - name: Start swift container services
+          service: name=openstack-swift-object-replicator state=started
+        - name: Start swift object auditor service
           tags: step6
-          service: name=openstack-swift-container* state=started
-        - name: Start swift account services
+          service: name=openstack-swift-object-auditor state=started
+        - name: Start swift object updater service
           tags: step6
-          service: name=openstack-swift-account* state=started
+          service: name=openstack-swift-object-updater state=started
+
+        - name: Start swift container replicator service
+          tags: step6
+          service: name=openstack-swift-container-replicator state=started
+        - name: Start swift container auditor service
+          tags: step6
+          service: name=openstack-swift-container-auditor state=started
+        - name: Start swift container updater service
+          tags: step6
+          service: name=openstack-swift-container-updater state=started
+        - name: Start swift container service
+          tags: step6
+          service: name=openstack-swift-container state=started
+
+        - name: Start swift account replicator service
+          tags: step6
+          service: name=openstack-swift-account-replicator state=started
+        - name: Start swift account auditor service
+          tags: step6
+          service: name=openstack-swift-account-auditor state=started
+        - name: Start swift account reaper service
+          tags: step6
+          service: name=openstack-swift-account-reaper state=started
+        - name: Start swift account service
+          tags: step6
+          service: name=openstack-swift-account state=started
+

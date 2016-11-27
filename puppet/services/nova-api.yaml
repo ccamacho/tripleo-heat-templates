@@ -163,9 +163,9 @@ outputs:
         - name: Stop nova_api service (running under httpd)
           tags: step2
           service: name=httpd state=stopped
-        - name: Sync nova_api DB
-          tags: step5
-          command: nova-manage api_db sync
+        #- name: Sync nova_api DB
+        #  tags: step5
+        #  command: nova-manage api_db sync
         - name: Start nova_api service (running under httpd)
           tags: step6
           service: name=httpd state=started

@@ -102,9 +102,9 @@ outputs:
         - name: Stop glance_registry service
           tags: step2
           service: name=openstack-glance-registry state=stopped
-        - name: Sync glance_registry DB
-          tags: step5
-          command: glance-manage --config-file=/etc/glance/glance-registry.conf db_sync
+        #- name: Sync glance_registry DB
+        #  tags: step5
+        #  command: glance-manage --config-file=/etc/glance/glance-registry.conf db_sync
         - name: Start glance_registry service
           tags: step6
           service: name=openstack-glance-registry state=started

@@ -78,12 +78,12 @@ outputs:
               template: "crudini  --set /etc/nova/nova.conf upgrade_levels compute LEVEL"
               params:
                 LEVEL: {get_param: UpgradeLevelNovaCompute}
-        - name: Sync nova_conductor DB
-          tags: step5
-          command: nova-manage db sync
-        - name: DB online migrations
-          tags: step5
-          command: nova-manage db online_data_migrations
+        #- name: Sync nova_conductor DB
+        #  tags: step5
+        #  command: nova-manage db sync
+        #- name: DB online migrations
+        #  tags: step5
+        #  command: nova-manage db online_data_migrations
         - name: Start nova_conductor service
           tags: step6
           service: name=openstack-nova-conductor state=started

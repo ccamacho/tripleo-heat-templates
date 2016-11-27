@@ -131,10 +131,10 @@ outputs:
             - swiftoperator
             - ResellerAdmin
       upgrade_tasks:
-        - name: Stop swift_proxy service
+        - name: Stop openstack-swift-proxy service
           tags: step2
-          service: name=swift-proxy state=stopped
-        - name: Start swift-proxy service
+          service: name=openstack-swift-proxy state=stopped
+        - name: Start openstack-swift-proxy service
           tags: step6
-          service: name=swift_proxy state=started
+          service: name=openstack-swift-proxy state=started
 

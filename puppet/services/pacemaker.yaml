@@ -77,6 +77,27 @@ parameters:
         (?<host>[^ ]*)
         (?<message>.*)$/
 
+  #Parameters defined for upgrades.
+  UpgradeLevelNovaCompute:
+    type: string
+    description: Nova Compute upgrade level
+    default: ''
+  MySqlMajorUpgrade:
+    type: string
+    description: Can be auto,yes,no and influences if the major upgrade should do or detect an automatic mysql upgrade
+    constraints:
+    - allowed_values: ['auto', 'yes', 'no']
+    default: 'auto'
+  IgnoreCephUpgradeWarnings:
+    type: boolean
+    default: false
+    description: If enabled, Ceph upgrade will be forced even though cluster or PGs status is not clean
+  KeepSaharaServicesOnUpgrade:
+    type: boolean
+    default: true
+    description: Whether to keep Sahara services when upgrading controller nodes from mitaka to newton
+
+
 outputs:
   role_data:
     description: Role data for the Pacemaker role.
@@ -114,3 +135,107 @@ outputs:
                 - {get_param: [DefaultPasswords, pcsd_password]}
       step_config: |
         include ::tripleo::profile::base::pacemaker
+      upgrade_tasks:
+        - name: Run pacemaker upgrade step 1 (Prepare for upgrade)
+          tags: step1
+          become: true
+          shell: |
+            #!/bin/bash
+            set -eu
+            mariadb_do_major_upgrade='{get_param: MySqlMajorUpgrade}'
+            upgrade_level_nova_compute='{get_param: UpgradeLevelNovaCompute}'
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_check.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_1.sh
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 2  (Stopping services)
+          tags: step2
+          become: true
+          shell: |
+            #!/bin/bash
+            set -eu
+            mariadb_do_major_upgrade='{get_param: MySqlMajorUpgrade}'
+            upgrade_level_nova_compute='{get_param: UpgradeLevelNovaCompute}'
+            backup_flags="--defaults-extra-file=/root/.my.cnf -u root --flush-privileges --all-databases --single-transaction"
+            MYSQL_BACKUP_DIR=/var/tmp/mysql_upgrade_osp
+            MYSQL_TEMP_UPGRADE_BACKUP_DIR=/var/lib/mysql-temp-upgrade-backup
+            # Spare disk ratio for extra safety
+            MYSQL_BACKUP_SIZE_RATIO=1.2
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_check.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_2_1.sh
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 3  (Upgrading services)
+          tags: step3
+          become: true
+          shell: |
+            #!/bin/bash
+            set -eu
+            mariadb_do_major_upgrade='{get_param: MySqlMajorUpgrade}'
+            upgrade_level_nova_compute='{get_param: UpgradeLevelNovaCompute}'
+            backup_flags="--defaults-extra-file=/root/.my.cnf -u root --flush-privileges --all-databases --single-transaction"
+            MYSQL_BACKUP_DIR=/var/tmp/mysql_upgrade_osp
+            MYSQL_TEMP_UPGRADE_BACKUP_DIR=/var/lib/mysql-temp-upgrade-backup
+            # Spare disk ratio for extra safety
+            MYSQL_BACKUP_SIZE_RATIO=1.2
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_check.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_2_2.sh
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 4 (starting services)
+          tags: step4
+          become: true
+          shell: |
+            #!/bin/bash
+            set -eu
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_3_1.sh
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 5 (sync db)
+          tags: step5
+          become: true
+          shell: |
+            #!/bin/bash
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_3_2.sh
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 6
+          tags: step5
+          become: true
+          shell: |
+            #!/bin/bash
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_4.sh          
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 7
+          tags: step5
+          become: true
+          shell: |
+            #!/bin/bash
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_5.sh          
+          ignore_errors: yes
+
+        - name: Run pacemaker upgrade step 8
+          tags: step5
+          become: true
+          shell: |
+            #!/bin/bash
+            keep_sahara_services_on_upgrade='{get_param: KeepSaharaServicesOnUpgrade}'
+            source /root/tripleo-heat-templates/extraconfig/tasks/pacemaker_common_functions.sh
+            source /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_pacemaker_migrations.sh
+            . /root/tripleo-heat-templates/extraconfig/tasks/major_upgrade_controller_pacemaker_6.sh          
+          ignore_errors: yes

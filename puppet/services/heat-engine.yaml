@@ -110,9 +110,9 @@ outputs:
         - name: Stop heat_engine service
           tags: step2
           service: name=openstack-heat-engine state=stopped
-        - name: Sync heat_engine DB
-          tags: step5
-          command: heat-manage --config-file /etc/heat/heat.conf db_sync
+        #- name: Sync heat_engine DB
+        #  tags: step5
+        #  command: heat-manage --config-file /etc/heat/heat.conf db_sync
         - name: Start heat_engine service
           tags: step6
           service: name=openstack-heat-engine state=started

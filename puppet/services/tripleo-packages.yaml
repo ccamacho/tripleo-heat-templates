@@ -33,6 +33,6 @@ outputs:
       step_config: |
         include ::tripleo::packages
       upgrade_tasks:
-        - name: Update all packages
+        - name: Update all nodes
           tags: step3
           yum: name=* state=latest
